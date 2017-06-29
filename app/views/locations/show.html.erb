@@ -1,27 +1,127 @@
-<p id="notice"><%= notice %></p>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
 
-<h1>your get away bus</h1>
+      <p id="notice"><%= notice %></p>
 
-<h3 class="text-muted">your current location</h3>
-<p class="text-muted">
-  <%= @location.full_street_address %> <small><%= link_to fa_icon('pencil', text: 'edit'), edit_location_path(@location) %></small>
-</p>
+      <h3 class="text-muted">Your Current Location</h3>
+      <p class="text-muted">
+        <%= @location.full_street_address %> <small><%= link_to fa_icon('pencil', text: 'edit'), edit_location_path(@location) %></small>
+      </p>
 
-<h3>closest busses are...</h3>
+      <!-- map -->
+      <div id="map-canvas">
 
-<% @buses.each do |bus| %>
-  <p>
-    <strong>route: </strong><%= bus["ROUTE"] %> <%= bus["DIRECTION"] %>
-    <br><strong>bus #:</strong> <%= bus["VEHICLE"] %>
-    <br><strong>next stop:</strong> <%= bus["TIMEPOINT"] %>
-  </p>
-<% end %>
+      </div>
 
-<% if @buses.empty? %>
-  <p>
-    no buses nearby :(
-    <br><%= link_to 'try again', edit_location_path(@location) %>
-  </p>
-<% end %>
+      <h3>Closest busses are...</h3>
 
-<p><%= link_to 'another location', edit_location_path(@location) %></p>
+      <% @buses.each do |bus| %>
+        <p>
+          <strong>Route: </strong><%= bus["ROUTE"] %> <%= bus["DIRECTION"] %>
+          <br><strong>Bus #:</strong> <%= bus["VEHICLE"] %>
+          <br><strong>Next stop:</strong> <%= bus["TIMEPOINT"] %>
+        </p>
+      <% end %>
+
+      <% if @buses.empty? %>
+        <p>
+          no buses nearby :(
+          <br><%= link_to 'try again', edit_location_path(@location) %>
+        </p>
+      <% end %>
+
+      <p><%= link_to 'another location', edit_location_path(@location) %></p>
+
+      <!-- javascript for map - put at bottom b/c it runs sync - at top it could make page load slower -->
+
+      <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['google_maps_api_key'] %>"></script>
+
+      <script type="text/javascript">
+        function initialize() {
+          var myLocation = new google.maps.LatLng(<%= @location.latitude %>, <%= @location.longitude %>)
+
+          var mapOptions = {
+            center: myLocation,
+            zoom: 15
+          };
+
+          var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
+          // put man icon on location
+          var personIcon = "<%= image_path 'man_icon.png' %>";
+
+          var myMarker = new google.maps.Marker({
+            position: myLocation,
+            map: map,
+            animation: google.maps.Animation.Drop,
+            title: 'My Location',
+            icon: personIcon
+          });
+
+             // start man popup
+            var mancontentString =
+              '<div id="mancontent">' +
+                '<h2>Your Location ' + '</h2>' +
+                '<p> <%= @location.full_street_address %> </p>' +
+              '</div>';
+
+              var infoWindow = new google.maps.InfoWindow ({
+                content: mancontentString
+              });
+
+              google.maps.event.addListener(myMarker, 'click', function() {
+                infoWindow.open(map, myMarker);
+              });
+          // end man popup
+
+          // put buses on map
+          var nearbyBuses = <%= raw @buses.to_json %>;
+
+          var busIcon = "<%= image_path 'bluebus.png' %>";
+
+          nearbyBuses.forEach(function (bus){
+            var busLocation = new google.maps.LatLng(bus["LATITUDE"], bus["LONGITUDE"]);
+            var busMarker = new google.maps.Marker({
+              position: busLocation,
+              map: map,
+              animation: google.maps.Animation.DROP,
+              title: bus["VEHICLE"],
+              icon: busIcon
+            });
+
+            // bus location pop up
+            var contentString =
+              '<div id="content">' +
+                '<h2>Bus ' + bus["VEHICLE"] + ' ' + bus["DIRECTION"] + '</h2>' +
+                '<div id="bodyContent">' +
+                  '<p>Next Stop: ' + bus["TIMEPOINT"] + '</p>' +
+                '</div>' +
+              '</div>';
+
+              var infoWindow = new google.maps.InfoWindow ({
+                content: contentString
+              });
+
+              google.maps.event.addListener(busMarker, 'click', function() {
+                infoWindow.open(map, busMarker);
+              });
+            // end bus location popup
+
+          });
+        }
+
+        google.maps.event.addDomListener(window, 'load', initialize);
+      </script>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+

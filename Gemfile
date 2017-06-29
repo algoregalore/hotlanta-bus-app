@@ -41,6 +41,8 @@ gem 'font-awesome-rails'
 
 gem 'annotate'
 gem 'stamp'
+
+gem 'figaro'
 # // our gems!!!!!!!!!!!!!!
 
 group :development, :test do
