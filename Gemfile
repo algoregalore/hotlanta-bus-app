@@ -43,6 +43,9 @@ gem 'annotate'
 gem 'stamp'
 
 gem 'figaro'
+
+gem 'aws-sdk'
+
 # // our gems!!!!!!!!!!!!!!
 
 group :development, :test do
