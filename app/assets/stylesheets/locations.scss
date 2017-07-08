@@ -3,11 +3,47 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 #map-canvas {
-  height: 500px;
+  height: 450px;
   width: 500px;
   margin: 0;
   padding: 0;
   border: 2px solid black;
+}
+
+#bus-list {
+  max-height: 450px;
+  overflow: scroll;
+}
+
+h3 {
+  font-family: 'Bree Serif', serif;
+}
+
+body {
+  font-family: 'Nobile', sans-serif;
+  background-color: #8ccdff;
+}
+
+a:link {
+    text-decoration: none;
+    color: #000;
+    font-weight: bold;
+}
+
+a:visited {
+    text-decoration: none;
+    color: #000;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+a:active {
+    text-decoration: none;
+    text-transform: uppercase;
 }
 
 
